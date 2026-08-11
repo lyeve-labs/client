@@ -256,4 +256,6 @@ export interface Entitlements {
   expires_at: string | null;
   /** Full days until expiry, -1 when unlicensed or perpetual. */
   days_remaining: number;
+  /** Maximum tenants this plan allows; 0 means unlimited. */
+  tenant_quota: number;
 }
