@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.2] - 2026-08-20
+
+### Changed
+- `Entitlements` no longer carries `expires_at` or `days_remaining`. The engine never exposes the licence expiry over HTTP, so the SDK type stops declaring it.
+
 ## [0.3.1] - 2026-08-12
 
 Published with no user-facing changes; repository tooling only.
