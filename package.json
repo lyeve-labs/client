@@ -1,6 +1,6 @@
 {
   "name": "@lyeve-labs/client",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Framework-agnostic TypeScript SDK for the LyEve Core API",
   "license": "MIT",
   "author": "LyEve <info@lyeve.com>",
