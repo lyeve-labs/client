@@ -4,6 +4,14 @@
   "description": "Framework-agnostic TypeScript SDK for the LyEve Core API",
   "license": "MIT",
   "author": "LyEve <info@lyeve.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lyeve-labs/client.git"
+  },
+  "homepage": "https://github.com/lyeve-labs/client#readme",
+  "bugs": {
+    "url": "https://github.com/lyeve-labs/client/issues"
+  },
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "engines": {
