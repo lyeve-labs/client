@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.6] - 2026-09-12
+
+### Fixed
+
+- The package manifest carries `repository`, `homepage` and `bugs`, so the npm
+  page links back to the source and the issue tracker. It published with none
+  of the three, which left a reader on npm with no way back to the code.
+
+### Changed
+
+- The declared Node floor is 24. Continuous integration has run on Node 24 for
+  some time and the manifest still said 20, which described a runtime nothing
+  was tested against. Node 22 consumers are no longer within the declared
+  range.
+- `prepublishOnly` runs the build, so a publish cannot skip the package lint,
+  the dist check or the version check. All three ran only from the build
+  script before, and a bare publish uploaded whatever `dist` happened to hold.
+  The version check refuses when `package.json` and the CHANGELOG head name
+  different versions.
+
 ## [0.3.5] - 2026-09-09
 
 ### Changed
@@ -25,11 +45,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.3.3] - 2026-08-27
 
 ### Fixed
+
 - Publishes what 0.3.2 described. That release was tagged with `package.json` left on 0.3.1, so the version never reached the registry and every consumer kept resolving 0.3.1, which still declared `expires_at` and `days_remaining` on `Entitlements`. The tag cannot move, so the same content ships as 0.3.3.
 
 ## [0.3.2] - 2026-08-20
 
 ### Changed
+
 - `Entitlements` no longer carries `expires_at` or `days_remaining`. The engine never exposes the licence expiry over HTTP, so the SDK type stops declaring it.
 
 ## [0.3.1] - 2026-08-12
