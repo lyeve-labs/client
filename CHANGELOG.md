@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.7] - 2026-09-23
+
+### Added
+
+- `Schema` carries an optional `transports` field, and `SchemaTransports`,
+  `TransportName` and `TransportMode` are exported alongside it. A schema says
+  which transports serve it and in which direction; absent means read-write
+  everywhere, so an existing definition keeps its meaning and nothing about
+  the runtime changes.
+
+  A consumer that edits a schema needs the declaration before it can offer the
+  choice: without it the key type-errors, and spreading it through untyped is
+  how a field gets dropped on a save.
+
 ## [0.3.6] - 2026-09-12
 
 ### Fixed
