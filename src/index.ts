@@ -25,6 +25,9 @@ export type { HttpClient } from "./client.js";
 export type {
   Schema,
   SchemaField,
+  SchemaTransports,
+  TransportName,
+  TransportMode,
   FieldType,
   Content,
   User,
