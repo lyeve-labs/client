@@ -14,9 +14,31 @@ export interface Schema {
   with_soft_delete?: boolean;
   /** Whether to support per-row localization. */
   with_localization?: boolean;
+  /**
+   * Which transports serve this schema, and in which direction. Absent, or an
+   * absent key inside it, is read-write: a schema that names no transports is
+   * served over all of them.
+   */
+  transports?: SchemaTransports;
   /** Canvas position : stored client-side in localStorage. */
   _pos?: { x: number; y: number };
 }
+
+/** A transport a schema can be served over. */
+export type TransportName = 'rest' | 'graphql' | 'grpc';
+
+/**
+ * How far a transport may reach into a schema. `off` removes it from that
+ * transport entirely rather than leaving an endpoint that refuses every call.
+ */
+export type TransportMode = 'rw' | 'r' | 'w' | 'off';
+
+/**
+ * Per-transport exposure. An unknown transport name or mode is refused by the
+ * server rather than ignored, because the default is permissive and a typo
+ * would otherwise leave a schema published over the transport it names.
+ */
+export type SchemaTransports = Partial<Record<TransportName, TransportMode>>;
 
 export interface SchemaField {
   /** Client-side stable id for drag-and-drop : not sent to the server. */
