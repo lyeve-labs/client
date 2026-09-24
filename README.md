@@ -27,15 +27,15 @@ Zero dependencies. Native `fetch`. One client, every transport.
 - **Typed HTTP client:** `get`, `post`, `put`, `patch`, `delete`. All generic, all typed end-to-end.
 - **ApiError:** thrown on every non-OK response. `status` and `message` always available.
 - **Automatic JSON:** `Content-Type: application/json` added by default. 15s timeout via `AbortSignal`.
-- **PaginationIterator:** async iterator over cursor-paginated endpoints. One loop, every page.
-- **QueryBuilder:** fluent `query(schema).where().orderBy().limit()` builder for content queries.
+- **PaginationIterator:** async iterator over cursor-paginated endpoints. It fetches page after page and yields one record at a time.
+- **QueryBuilder:** fluent `query(schema).where().sort().limit()` builder for content queries.
 - **createRetryFetch:** automatic retry with configurable exponential backoff.
 - **RequestDeduplicator:** coalesce in-flight duplicate requests into a single network call.
 - **Shared types:** `Schema`, `Content`, `User`, `APIKey`, `Webhook`, and 20+ more.
 
 ## Requirements
 
-- **Node 20** or newer
+- **Node 24** or newer
 
 ## Install
 
@@ -48,41 +48,61 @@ pnpm add @lyeve-labs/client
 ## Use
 
 ```ts
-import { createClient, PaginationIterator } from "@lyeve-labs/client";
+import {
+  createClient,
+  createRetryFetch,
+  PaginationIterator,
+  query,
+  RequestDeduplicator,
+  type Content,
+} from "@lyeve-labs/client";
 
 const client = createClient(fetch, {
   Authorization: "Bearer <token>",
 });
 
 // GET
-const data = await client.get<{ ok: boolean }>("/api/v1/health");
+const health = await client.get<{ status: string }>("/api/v1/health");
 
-// POST
-const result = await client.post<{ id: string }>("/api/v1/content", {
+// POST (the body is required on post, put and patch)
+const created = await client.post<Content>("/api/v1/content/articles", {
   title: "Hello",
 });
 
-// Pagination
-for await (const page of new PaginationIterator((cursor) =>
-  client.get(`/api/v1/items?after=${cursor}`),
-)) {
-  console.log(page.items);
+// Pagination: fetchPage returns { items, next_cursor }, the iterator yields records
+const articles = new PaginationIterator<Content>({
+  fetchPage: async (cursor) => {
+    const qs = new URLSearchParams({ limit: "50" });
+    if (cursor) qs.set("cursor", cursor);
+    const page = await client.get<{ data?: Content[]; next_cursor?: string }>(
+      `/api/v1/content/articles/cursor?${qs}`,
+    );
+    return { items: page.data ?? [], next_cursor: page.next_cursor };
+  },
+});
+for await (const article of articles) {
+  console.log(article.id);
 }
 
+// Query builder
+const published = query("articles")
+  .whereStatus("published")
+  .sort("-created_at")
+  .limit(20)
+  .build();
+
 // Retry
-import { createRetryFetch } from "@lyeve-labs/client";
 const resilient = createRetryFetch(fetch, {
-  maxAttempts: 3,
+  maxRetries: 3,
   baseDelay: 200,
 });
 const retryClient = createClient(resilient);
 
 // Dedup
-import { RequestDeduplicator } from "@lyeve-labs/client";
 const dedup = new RequestDeduplicator();
 const [a, b] = await Promise.all([
-  dedup.dedup("key-1", () => client.get("/api/v1/data")),
-  dedup.dedup("key-1", () => client.get("/api/v1/data")), // reuses in-flight request
+  dedup.dedup("schemas", () => client.get("/api/v1/schemas")),
+  dedup.dedup("schemas", () => client.get("/api/v1/schemas")), // reuses the in-flight request
 ]);
 ```
 
@@ -94,10 +114,10 @@ Returns `{ get, post, put, patch, delete }`. Each method is a typed generic:
 
 ```ts
 client.get<T>(url: string, init?: RequestInit): Promise<T>
-client.post<T>(url: string, body?: unknown, init?: RequestInit): Promise<T>
-client.put<T>(url: string, body?: unknown, init?: RequestInit): Promise<T>
-client.patch<T>(url: string, body?: unknown, init?: RequestInit): Promise<T>
-client.delete<T>(url: string, init?: RequestInit): Promise<T | undefined>
+client.post<T>(url: string, body: unknown, init?: RequestInit): Promise<T>
+client.put<T>(url: string, body: unknown, init?: RequestInit): Promise<T>
+client.patch<T>(url: string, body: unknown, init?: RequestInit): Promise<T>
+client.delete<T>(url: string, init?: RequestInit): Promise<T> // a 204 resolves to undefined
 ```
 
 ### ApiError

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- The README examples compile against the exported API.
+  `PaginationIterator` takes `{ fetchPage }` and yields records, not pages;
+  `createRetryFetch` takes `maxRetries`, not `maxAttempts`; the query builder
+  sorts with `sort()`, not `orderBy()`; `post`, `put` and `patch` take a
+  required body; and `delete` resolves to `Promise<T>`. The examples call
+  routes the engine serves, and the Node floor reads 24.
+
 ## [0.3.7] - 2026-09-23
 
 ### Added
