@@ -270,7 +270,7 @@ export interface Entitlements {
   state: string;
   /**
    * Entitled feature names, matched verbatim. These are unprefixed and
-   * kebab-case ("rbac", "schema-ui", "cache-redis"): the plugin name, or the
+   * kebab-case ("audit", "graphql", "cache-redis"): the plugin name, or the
    * SKU minus its "plugin-" prefix. A "feature:"-prefixed id matches nothing.
    */
   features: string[];
