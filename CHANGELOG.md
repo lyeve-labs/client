@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sorts with `sort()`, not `orderBy()`; `post`, `put` and `patch` take a
   required body; and `delete` resolves to `Promise<T>`. The examples call
   routes the engine serves, and the Node floor reads 24.
+- `Entitlements` declares the licence fields the engine returns:
+  `license_source` (`token`, `key` or `stored_key`), `expires_at` and
+  `license_error`, all optional.
 
 ## [0.3.7] - 2026-09-23
 
