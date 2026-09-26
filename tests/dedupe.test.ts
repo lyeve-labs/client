@@ -279,11 +279,11 @@ describe("RequestDeduplicator - abort signal", () => {
   it("rejects with custom reason when signal is already aborted", async () => {
     const dedupe = new RequestDeduplicator();
     const ac = new AbortController();
-    ac.abort(new Error("user cancelled"));
+    ac.abort(new Error("user canceled"));
 
     await expect(
       dedupe.dedup("key", async () => "value", ac.signal),
-    ).rejects.toThrow("user cancelled");
+    ).rejects.toThrow("user canceled");
   });
 
   it("only aborts the caller whose signal fired, not the shared request", async () => {

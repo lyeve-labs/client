@@ -390,11 +390,11 @@ describe("createRetryFetch - abort signal", () => {
     });
     const retrying = createRetryFetch(fetchFn, { maxRetries: 3 });
     const ac = new AbortController();
-    ac.abort(new Error("Cancelled by user"));
+    ac.abort(new Error("Canceled by user"));
 
     await expect(
       retrying("https://api.example.com/data", { signal: ac.signal }),
-    ).rejects.toThrow("Cancelled by user");
+    ).rejects.toThrow("Canceled by user");
   });
 });
 
