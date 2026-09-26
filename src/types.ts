@@ -277,13 +277,13 @@ export interface Entitlements {
   /** Maximum tenants this plan allows; 0 means unlimited. */
   tenant_quota: number;
   /**
-   * What renews the licence: "token" for a signed token, which nothing
+   * What renews the license: "token" for a signed token, which nothing
    * renews; "key" for an opaque key in LYEVE_LICENSE_KEY, which the engine
    * exchanges and which takes precedence; "stored_key" for an opaque key a
-   * super admin entered, kept encrypted. Absent with no licence.
+   * super admin entered, kept encrypted. Absent with no license.
    */
   license_source?: "token" | "key" | "stored_key";
-  /** RFC 3339 expiry of the token in force. Absent with no licence. */
+  /** RFC 3339 expiry of the token in force. Absent with no license. */
   expires_at?: string;
   /** Why the last key exchange failed. Never the key or the token. */
   license_error?: string;
