@@ -58,6 +58,18 @@ export interface SchemaField {
   relation_fk_name?: string;
   /** Set by the server : these fields cannot be edited or removed in the UI. */
   system?: boolean;
+  /**
+   * The field's value is translated per locale.
+   *
+   * It generates no column. A translation is stored once per entry and locale,
+   * so marking a field changes nothing about the content table.
+   *
+   * Only free text carries it: text, rich_text and url. A translated number is
+   * a different number and a translated relation points at something that does
+   * not exist, so the server refuses the mark on any other type and on any
+   * unique field rather than ignoring it.
+   */
+  localized?: boolean;
 }
 
 export type FieldType =
