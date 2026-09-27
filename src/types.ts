@@ -274,12 +274,12 @@ export interface Entitlements {
    * SKU minus its "plugin-" prefix. A "feature:"-prefixed id matches nothing.
    */
   features: string[];
-  /** Maximum tenants this plan allows; 0 means unlimited. */
+  /** Maximum tenants this plan allows. 0 means unlimited. */
   tenant_quota: number;
   /**
-   * What renews the license: "token" for a signed token, which nothing
-   * renews; "key" for an opaque key in LYEVE_LICENSE_KEY, which the engine
-   * exchanges and which takes precedence; "stored_key" for an opaque key a
+   * What renews the license. It is "token" for a signed token, which nothing
+   * renews. It is "key" for an opaque key in LYEVE_LICENSE_KEY, which the engine
+   * exchanges and which takes precedence. It is "stored_key" for an opaque key a
    * super admin entered, kept encrypted. Absent with no license.
    */
   license_source?: "token" | "key" | "stored_key";
