@@ -96,7 +96,7 @@ describe("RequestDeduplicator - eviction after settlement", () => {
     // First call resolves
     await dedupe.dedup("key", factory);
 
-    // Second call after eviction - factory should be called again
+    // Second call after eviction: factory should be called again
     const result = await dedupe.dedup("key", factory);
 
     expect(result).toBe("result");
@@ -113,7 +113,7 @@ describe("RequestDeduplicator - eviction after settlement", () => {
     // First call rejects
     await dedupe.dedup("key", factory).catch(() => {});
 
-    // Second call after eviction - factory should be called again
+    // Second call after eviction: factory should be called again
     await expect(dedupe.dedup("key", factory)).rejects.toThrow("fail");
     expect(factory).toHaveBeenCalledTimes(2);
   });
@@ -129,7 +129,7 @@ describe("RequestDeduplicator - eviction after settlement", () => {
     // Wait a tick to ensure eviction has propagated
     await new Promise((r) => setTimeout(r, 0));
 
-    // Late subscriber - should start a new request
+    // Late subscriber: should start a new request
     const result = await dedupe.dedup("key", factory2);
     expect(result).toBe("fresh-result");
     expect(factory2).toHaveBeenCalledTimes(1);
@@ -305,7 +305,7 @@ describe("RequestDeduplicator - abort signal", () => {
 
     await expect(p1).rejects.toThrow();
 
-    // The shared request continues - resolve it
+    // The shared request continues: resolve it
     resolveFactory("shared-result");
     const r2 = await p2;
 
@@ -328,7 +328,7 @@ describe("RequestDeduplicator - abort signal", () => {
     const p2 = dedupe.dedup("key", factory, ac2.signal);
     const p3 = dedupe.dedup("key", factory, ac3.signal);
 
-    // Abort callers 1 and 3 - catch p3 immediately to avoid unhandled rejection
+    // Abort callers 1 and 3: catch p3 immediately to avoid unhandled rejection
     ac1.abort();
     const p3Err = p3.catch(() => {});
     ac3.abort();
