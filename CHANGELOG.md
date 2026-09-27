@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+## [0.4.0] - 2026-09-27
+
+### Added
+
+- `SchemaField.localized` marks a field whose value is translated per locale.
+  It generates no column: a translation is stored once per entry and locale, so
+  marking a field changes nothing about the content table. Only free text
+  carries it (`text`, `rich_text`, `url`), and the engine refuses the mark on
+  any other type and on a unique field rather than ignoring it.
+
+### Fixed
+
+- The README examples compile against the exported API.
+  `PaginationIterator` takes `{ fetchPage }` and yields records, not pages;
+  `createRetryFetch` takes `maxRetries`, not `maxAttempts`; the query builder
+  sorts with `sort()`, not `orderBy()`; `post`, `put` and `patch` take a
+  required body; and `delete` resolves to `Promise<T>`. The examples call
+  routes the engine serves, and the Node floor reads 24.
+- `Entitlements` declares the license fields the engine returns:
+  `license_source` (`token`, `key` or `stored_key`), `expires_at` and
+  `license_error`, all optional.
+
 ## [0.3.7] - 2026-09-23
 
 ### Added
@@ -46,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation and shipped strings no longer carry em dashes, unicode
   ellipses or unicode bullets. Where a string is an error or a log line the
   wording changed and nothing else: status codes, machine-readable error codes
-  and behaviour are untouched, so a client matching on a code is unaffected.
+  and behavior are untouched, so a client matching on a code is unaffected.
 - An elision inside a code span now uses three ASCII periods, so a reader who
   copies one gets something their tool accepts.
 
@@ -66,7 +90,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `Entitlements` no longer carries `expires_at` or `days_remaining`. The engine never exposes the licence expiry over HTTP, so the SDK type stops declaring it.
+- `Entitlements` no longer carries `expires_at` or `days_remaining`. The engine never exposes the license expiry over HTTP, so the SDK type stops declaring it.
 
 ## [0.3.1] - 2026-08-12
 
