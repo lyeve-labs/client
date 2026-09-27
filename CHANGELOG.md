@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   sorts with `sort()`, not `orderBy()`; `post`, `put` and `patch` take a
   required body; and `delete` resolves to `Promise<T>`. The examples call
   routes the engine serves, and the Node floor reads 24.
-- `Entitlements` declares the licence fields the engine returns:
+- `Entitlements` declares the license fields the engine returns:
   `license_source` (`token`, `key` or `stored_key`), `expires_at` and
   `license_error`, all optional.
 
@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Documentation and shipped strings no longer carry em dashes, unicode
   ellipses or unicode bullets. Where a string is an error or a log line the
   wording changed and nothing else: status codes, machine-readable error codes
-  and behaviour are untouched, so a client matching on a code is unaffected.
+  and behavior are untouched, so a client matching on a code is unaffected.
 - An elision inside a code span now uses three ASCII periods, so a reader who
   copies one gets something their tool accepts.
 
@@ -80,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `Entitlements` no longer carries `expires_at` or `days_remaining`. The engine never exposes the licence expiry over HTTP, so the SDK type stops declaring it.
+- `Entitlements` no longer carries `expires_at` or `days_remaining`. The engine never exposes the license expiry over HTTP, so the SDK type stops declaring it.
 
 ## [0.3.1] - 2026-08-12
 
