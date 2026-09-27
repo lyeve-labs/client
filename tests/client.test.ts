@@ -180,6 +180,56 @@ describe("createClient - ApiError mapping", () => {
     }
   });
 
+  it("keeps the whole decoded body, so a refusal that carries numbers survives the throw", async () => {
+    // The engine's capacity refusal. The two numbers are what lets a console
+    // say "3 of 3" without holding the ceiling itself, and they used to be
+    // dropped here, leaving the caller with the code alone.
+    const fetchFn = stubFetch(() =>
+      jsonResponse(
+        {
+          error: "cap_exceeded",
+          cap: "rbac.roles",
+          limit: 3,
+          current: 3,
+          upgrade_url: "",
+        },
+        402,
+      ),
+    );
+    const client = createClient(fetchFn as unknown as typeof fetch);
+
+    const err = await client
+      .post("/api/admin/permissions", {})
+      .catch((e: unknown) => e);
+
+    expect(err).toBeInstanceOf(ApiError);
+    if (err instanceof ApiError) {
+      expect(err.status).toBe(402);
+      expect(err.message).toBe("cap_exceeded");
+      expect(err.body).toEqual({
+        error: "cap_exceeded",
+        cap: "rbac.roles",
+        limit: 3,
+        current: 3,
+        upgrade_url: "",
+      });
+    }
+  });
+
+  it("leaves body undefined when the error was not JSON, so a caller can tell nothing was sent", async () => {
+    const fetchFn = stubFetch(
+      () => new Response("gateway down", { status: 502 }),
+    );
+    const client = createClient(fetchFn as unknown as typeof fetch);
+
+    const err = await client.get("/x").catch((e: unknown) => e);
+
+    expect(err).toBeInstanceOf(ApiError);
+    if (err instanceof ApiError) {
+      expect(err.body).toBeUndefined();
+    }
+  });
+
   it("falls back to the raw text when the error body is not JSON", async () => {
     const fetchFn = stubFetch(
       () => new Response("gateway down", { status: 502 }),
