@@ -58,6 +58,18 @@ export interface SchemaField {
   relation_fk_name?: string;
   /** Set by the server : these fields cannot be edited or removed in the UI. */
   system?: boolean;
+  /**
+   * The field's value is translated per locale.
+   *
+   * It generates no column. A translation is stored once per entry and locale,
+   * so marking a field changes nothing about the content table.
+   *
+   * Only free text carries it: text, rich_text and url. A translated number is
+   * a different number and a translated relation points at something that does
+   * not exist, so the server refuses the mark on any other type and on any
+   * unique field rather than ignoring it.
+   */
+  localized?: boolean;
 }
 
 export type FieldType =
@@ -270,10 +282,21 @@ export interface Entitlements {
   state: string;
   /**
    * Entitled feature names, matched verbatim. These are unprefixed and
-   * kebab-case ("rbac", "schema-ui", "cache-redis"): the plugin name, or the
+   * kebab-case ("audit", "graphql", "cache-redis"): the plugin name, or the
    * SKU minus its "plugin-" prefix. A "feature:"-prefixed id matches nothing.
    */
   features: string[];
-  /** Maximum tenants this plan allows; 0 means unlimited. */
+  /** Maximum tenants this plan allows. 0 means unlimited. */
   tenant_quota: number;
+  /**
+   * What renews the license. It is "token" for a signed token, which nothing
+   * renews. It is "key" for an opaque key in LYEVE_LICENSE_KEY, which the engine
+   * exchanges and which takes precedence. It is "stored_key" for an opaque key a
+   * super admin entered, kept encrypted. Absent with no license.
+   */
+  license_source?: "token" | "key" | "stored_key";
+  /** RFC 3339 expiry of the token in force. Absent with no license. */
+  expires_at?: string;
+  /** Why the last key exchange failed. Never the key or the token. */
+  license_error?: string;
 }

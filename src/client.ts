@@ -11,6 +11,23 @@ export class ApiError extends Error {
   constructor(
     public readonly status: number,
     message: string,
+    /**
+     * The decoded response body, when the server sent JSON, and undefined
+     * otherwise. `message` is its `error` key, which is all this class used
+     * to keep.
+     *
+     * Several of the engine's refusals carry more than a code. A 402 for a
+     * capacity ceiling sends `cap`, `limit` and `current` so a console can
+     * say "3 of 3" without holding the number itself, and a 402 from the
+     * flow plugin sends the node ids at fault so an editor can mark them.
+     * None of that survived the throw, so every caller had to re-fetch or
+     * guess, and the one console that needed the numbers rendered them from
+     * a second source instead.
+     *
+     * Typed `unknown` on purpose. It is whatever the server sent, and a
+     * caller narrows it.
+     */
+    public readonly body?: unknown,
   ) {
     super(message);
     this.name = "ApiError";
@@ -44,13 +61,16 @@ export function createClient(
     if (!res.ok) {
       const text = await res.text();
       let message = text;
+      let body: unknown;
       try {
         const json = JSON.parse(text) as { error?: string };
+        body = json;
         message = json.error ?? text;
       } catch {
-        // use raw text
+        // Not JSON. The raw text is the message and there is no body to
+        // narrow, which is the case a caller reading `body` has to handle.
       }
-      throw new ApiError(res.status, message);
+      throw new ApiError(res.status, message, body);
     }
 
     if (res.status === 204) return undefined as T;
