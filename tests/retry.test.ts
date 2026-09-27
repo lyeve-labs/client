@@ -113,7 +113,7 @@ describe("createRetryFetch - retry on HTTP status codes", () => {
     const onRetry = vi.fn();
     const retrying = createRetryFetch(fetchFn, { onRetry, maxRetries: 3 });
 
-    // Start the request - it will hang on the first sleep
+    // Start the request: it will hang on the first sleep
     const resPromise = retrying("https://api.example.com/data");
 
     // Advance time through first retry (500ms delay at base=1000, random=0.5)
@@ -416,7 +416,7 @@ describe("createRetryFetch - body cloning on retry", () => {
         callCount++;
         if (callCount === 1) return jsonResponse({ error: "fail" }, 503);
         if (callCount === 2) return jsonResponse({ error: "fail" }, 503);
-        // Third call - check body is still available
+        // Third call: check body is still available
         const body = init?.body;
         expect(body).toBeTruthy();
         return jsonResponse({ ok: true });
