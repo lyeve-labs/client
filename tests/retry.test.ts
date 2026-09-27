@@ -345,7 +345,7 @@ describe("createRetryFetch - abort signal", () => {
         signal: ac.signal,
       });
 
-      // Advance past the first fetch; the retry loop is now sleeping ~9.9s.
+      // Advance past the first fetch. The retry loop is now sleeping ~9.9s.
       await vi.advanceTimersByTimeAsync(100);
 
       // Abort during the backoff window.
