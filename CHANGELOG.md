@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-09-27
+
+### Added
+
+- `SchemaField.localized` marks a field whose value is translated per locale.
+  It generates no column: a translation is stored once per entry and locale, so
+  marking a field changes nothing about the content table. Only free text
+  carries it (`text`, `rich_text`, `url`), and the engine refuses the mark on
+  any other type and on a unique field rather than ignoring it.
+
 ### Fixed
 
 - The README examples compile against the exported API.
