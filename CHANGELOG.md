@@ -5,7 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.5.0] - 2026-10-01
+
+### Added
+
+- `Entitlements` declares the rest of what `GET /api/admin/entitlements`
+  returns: `withheld`, the features an operator took away from the caller's
+  tenant, `caps`, every capacity ceiling by name with 0 meaning unlimited,
+  `license_module`, whether the build links a license module, and
+  `plan_label` and `grace_ends_at` from the license module. All are optional,
+  because an engine older than these fields omits them. An engine that sends
+  `withheld` or `caps` never sends null.
 
 ## [0.4.0] - 2026-09-27
 
