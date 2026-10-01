@@ -14,4 +14,35 @@ describe("Entitlements", () => {
       string | undefined
     >();
   });
+
+  it("declares the tenant, capacity and module fields", () => {
+    expectTypeOf<Entitlements["plan_label"]>().toEqualTypeOf<
+      string | undefined
+    >();
+    expectTypeOf<Entitlements["grace_ends_at"]>().toEqualTypeOf<
+      string | undefined
+    >();
+    expectTypeOf<Entitlements["withheld"]>().toEqualTypeOf<
+      string[] | undefined
+    >();
+    expectTypeOf<Entitlements["caps"]>().toEqualTypeOf<
+      Record<string, number> | undefined
+    >();
+    expectTypeOf<Entitlements["license_module"]>().toEqualTypeOf<
+      boolean | undefined
+    >();
+  });
+
+  it("accepts the body an engine sends today", () => {
+    const body: Entitlements = {
+      plan: "free",
+      state: "free",
+      features: ["search"],
+      withheld: [],
+      tenant_quota: 0,
+      caps: { "rbac.roles": 3 },
+      license_module: false,
+    };
+    expectTypeOf(body).toMatchTypeOf<Entitlements>();
+  });
 });
