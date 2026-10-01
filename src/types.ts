@@ -25,13 +25,13 @@ export interface Schema {
 }
 
 /** A transport a schema can be served over. */
-export type TransportName = 'rest' | 'graphql' | 'grpc';
+export type TransportName = "rest" | "graphql" | "grpc";
 
 /**
  * How far a transport may reach into a schema. `off` removes it from that
  * transport entirely rather than leaving an endpoint that refuses every call.
  */
-export type TransportMode = 'rw' | 'r' | 'w' | 'off';
+export type TransportMode = "rw" | "r" | "w" | "off";
 
 /**
  * Per-transport exposure. An unknown transport name or mode is refused by the
