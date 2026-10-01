@@ -223,7 +223,7 @@ describe("QueryBuilder - limit / offset / cursor", () => {
 
   it("offset(undefined) unsets offset but does not clear cursor", () => {
     const q = new QueryBuilder("posts").cursor("abc").offset(undefined).build();
-    // cursor was already set; offset(undefined) only unsets offset
+    // cursor was already set, and offset(undefined) only unsets offset
     expect(q.offset).toBeUndefined();
     expect(q.cursor).toBe("abc");
   });

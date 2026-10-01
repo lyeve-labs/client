@@ -113,7 +113,7 @@ describe("createRetryFetch - retry on HTTP status codes", () => {
     const onRetry = vi.fn();
     const retrying = createRetryFetch(fetchFn, { onRetry, maxRetries: 3 });
 
-    // Start the request - it will hang on the first sleep
+    // Start the request: it will hang on the first sleep
     const resPromise = retrying("https://api.example.com/data");
 
     // Advance time through first retry (500ms delay at base=1000, random=0.5)
@@ -345,7 +345,7 @@ describe("createRetryFetch - abort signal", () => {
         signal: ac.signal,
       });
 
-      // Advance past the first fetch; the retry loop is now sleeping ~9.9s.
+      // Advance past the first fetch. The retry loop is now sleeping ~9.9s.
       await vi.advanceTimersByTimeAsync(100);
 
       // Abort during the backoff window.
@@ -390,11 +390,11 @@ describe("createRetryFetch - abort signal", () => {
     });
     const retrying = createRetryFetch(fetchFn, { maxRetries: 3 });
     const ac = new AbortController();
-    ac.abort(new Error("Cancelled by user"));
+    ac.abort(new Error("Canceled by user"));
 
     await expect(
       retrying("https://api.example.com/data", { signal: ac.signal }),
-    ).rejects.toThrow("Cancelled by user");
+    ).rejects.toThrow("Canceled by user");
   });
 });
 
@@ -416,7 +416,7 @@ describe("createRetryFetch - body cloning on retry", () => {
         callCount++;
         if (callCount === 1) return jsonResponse({ error: "fail" }, 503);
         if (callCount === 2) return jsonResponse({ error: "fail" }, 503);
-        // Third call - check body is still available
+        // Third call: check body is still available
         const body = init?.body;
         expect(body).toBeTruthy();
         return jsonResponse({ ok: true });
