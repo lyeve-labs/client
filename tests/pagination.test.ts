@@ -112,7 +112,7 @@ describe("PaginationIterator - withSignal", () => {
     const ac = new AbortController();
     const cloned = iter.withSignal(ac.signal);
 
-    // Clone shares buffer - should get 'b' without another fetch
+    // Clone shares buffer: should get 'b' without another fetch
     const second = await cloned.next();
     expect(second.value).toBe("b");
 
@@ -327,7 +327,7 @@ describe("PaginationIterator - edge cases", () => {
     const fetchPage = makePageFetcher([{ items: ["a", "b", "c"] }]);
     const iter = new PaginationIterator<string>({ fetchPage });
 
-    // Call next() three times - only 1 fetch, 3 yields from buffer
+    // Call next() three times: only 1 fetch, 3 yields from buffer
     const r1 = await iter.next();
     const r2 = await iter.next();
     const r3 = await iter.next();
