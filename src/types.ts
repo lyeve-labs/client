@@ -299,4 +299,29 @@ export interface Entitlements {
   expires_at?: string;
   /** Why the last key exchange failed. Never the key or the token. */
   license_error?: string;
+  /**
+   * The plan in the license module's own words, for display. Absent leaves
+   * `plan` to show.
+   */
+  plan_label?: string;
+  /** RFC 3339 time the licensed features stop. Sent only during grace. */
+  grace_ends_at?: string;
+  /**
+   * Feature names an operator took away from the caller's tenant, expanded to
+   * every name that falls with them. `features` stays the instance's license,
+   * so a feature is usable by this tenant only when it is in `features` and
+   * not here. An engine that sends it never sends null.
+   */
+  withheld?: string[];
+  /**
+   * Every capacity ceiling the install runs under, by name, where 0 means
+   * unlimited. An engine that sends it never sends null, and an install with
+   * no ceilings sends an empty object.
+   */
+  caps?: Record<string, number>;
+  /**
+   * Whether the build links a license module. An engine new enough to know
+   * always sends it, so its absence names an engine too old to say.
+   */
+  license_module?: boolean;
 }
