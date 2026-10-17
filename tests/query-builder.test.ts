@@ -18,12 +18,41 @@ describe("QueryBuilder - construction", () => {
 
   it("build() returns an empty query with no filters", () => {
     const q = new QueryBuilder("posts").build();
-    expect(q.status).toBeUndefined();
     expect(q.limit).toBeUndefined();
     expect(q.offset).toBeUndefined();
     expect(q.cursor).toBeUndefined();
     expect(q.filters).toBeUndefined();
-    expect(q.sort).toBeUndefined();
+  });
+});
+
+// the engine's list API
+
+describe("QueryBuilder - matches the engine's list API", () => {
+  it("sends an equality filter as the bare value the engine compares", () => {
+    const q = new QueryBuilder("posts").whereEq("title", "Hello").build();
+    expect(q.filters).toEqual({ title: "Hello" });
+  });
+
+  it("sends the status as the _status filter the engine reads", () => {
+    const q = new QueryBuilder("posts").whereStatus("draft").build();
+    expect(q.filters).toEqual({ _status: "draft" });
+    expect(q).not.toHaveProperty("status");
+  });
+
+  it("offers no sort, range, set or search the engine would ignore or refuse", () => {
+    const qb = new QueryBuilder("posts");
+    for (const name of [
+      "sort",
+      "whereGt",
+      "whereGte",
+      "whereLt",
+      "whereLte",
+      "whereIn",
+      "whereSearch",
+    ]) {
+      expect(qb).not.toHaveProperty(name);
+    }
+    expect(qb.build()).not.toHaveProperty("sort");
   });
 });
 
@@ -32,17 +61,17 @@ describe("QueryBuilder - construction", () => {
 describe("QueryBuilder - whereStatus", () => {
   it('sets the status to "published"', () => {
     const q = new QueryBuilder("articles").whereStatus("published").build();
-    expect(q.status).toBe("published");
+    expect(q.filters).toEqual({ _status: "published" });
   });
 
   it('sets the status to "draft"', () => {
     const q = new QueryBuilder("articles").whereStatus("draft").build();
-    expect(q.status).toBe("draft");
+    expect(q.filters).toEqual({ _status: "draft" });
   });
 
   it('sets the status to "archived"', () => {
     const q = new QueryBuilder("articles").whereStatus("archived").build();
-    expect(q.status).toBe("archived");
+    expect(q.filters).toEqual({ _status: "archived" });
   });
 
   it("clears status when called with undefined", () => {
@@ -50,7 +79,7 @@ describe("QueryBuilder - whereStatus", () => {
       .whereStatus("published")
       .whereStatus(undefined)
       .build();
-    expect(q.status).toBeUndefined();
+    expect(q.filters).toBeUndefined();
   });
 
   it("returns this for chaining", () => {
@@ -61,26 +90,26 @@ describe("QueryBuilder - whereStatus", () => {
 
 // field filters
 
-describe("QueryBuilder - where (raw operator filter)", () => {
-  it("adds a filter with op:value format", () => {
-    const q = new QueryBuilder("posts").where("title", "like:%hello%").build();
-    expect(q.filters).toEqual({ title: "like:%hello%" });
+describe("QueryBuilder - where", () => {
+  it("adds a filter with the value as given", () => {
+    const q = new QueryBuilder("posts").where("title", "hello").build();
+    expect(q.filters).toEqual({ title: "hello" });
   });
 
   it("accumulates multiple filters", () => {
     const q = new QueryBuilder("posts")
-      .where("status", "eq:published")
-      .where("author", "eq:alice")
+      .where("category", "tech")
+      .where("author", "alice")
       .build();
-    expect(q.filters).toEqual({ status: "eq:published", author: "eq:alice" });
+    expect(q.filters).toEqual({ category: "tech", author: "alice" });
   });
 
   it("later calls override same field", () => {
     const q = new QueryBuilder("posts")
-      .where("status", "eq:draft")
-      .where("status", "eq:published")
+      .where("category", "news")
+      .where("category", "tech")
       .build();
-    expect(q.filters).toEqual({ status: "eq:published" });
+    expect(q.filters).toEqual({ category: "tech" });
   });
 
   it("returns this for chaining", () => {
@@ -90,110 +119,24 @@ describe("QueryBuilder - where (raw operator filter)", () => {
 });
 
 describe("QueryBuilder - whereEq", () => {
-  it("formats a string value as eq:value", () => {
+  it("keeps a string value as given", () => {
     const q = new QueryBuilder("posts").whereEq("title", "Hello").build();
-    expect(q.filters).toEqual({ title: "eq:Hello" });
+    expect(q.filters).toEqual({ title: "Hello" });
   });
 
-  it("formats a number value as eq:value", () => {
+  it("formats a number value as a string", () => {
     const q = new QueryBuilder("posts").whereEq("views", 42).build();
-    expect(q.filters).toEqual({ views: "eq:42" });
+    expect(q.filters).toEqual({ views: "42" });
   });
 
-  it("formats a boolean value as eq:true/false", () => {
+  it("formats a boolean value as true or false", () => {
     const q = new QueryBuilder("posts").whereEq("featured", true).build();
-    expect(q.filters).toEqual({ featured: "eq:true" });
+    expect(q.filters).toEqual({ featured: "true" });
   });
 
   it("returns this for chaining", () => {
     const qb = new QueryBuilder("x");
     expect(qb.whereEq("a", 1)).toBe(qb);
-  });
-});
-
-describe("QueryBuilder - whereIn", () => {
-  it("formats string values as JSON array", () => {
-    const q = new QueryBuilder("posts")
-      .whereIn("tags", ["a", "b", "c"])
-      .build();
-    expect(q.filters).toEqual({ tags: 'in:["a","b","c"]' });
-  });
-
-  it("formats number values as JSON array", () => {
-    const q = new QueryBuilder("posts").whereIn("ratings", [1, 2, 5]).build();
-    expect(q.filters).toEqual({ ratings: "in:[1,2,5]" });
-  });
-
-  it("handles an empty array", () => {
-    const q = new QueryBuilder("posts").whereIn("ids", []).build();
-    expect(q.filters).toEqual({ ids: "in:[]" });
-  });
-
-  it("returns this for chaining", () => {
-    const qb = new QueryBuilder("x");
-    expect(qb.whereIn("a", [1])).toBe(qb);
-  });
-});
-
-describe("QueryBuilder - comparison filters (whereGt, whereGte, whereLt, whereLte)", () => {
-  it("whereGt formats as gt:value", () => {
-    const q = new QueryBuilder("posts").whereGt("views", 100).build();
-    expect(q.filters).toEqual({ views: "gt:100" });
-  });
-
-  it("whereGte formats as gte:value", () => {
-    const q = new QueryBuilder("posts").whereGte("views", 100).build();
-    expect(q.filters).toEqual({ views: "gte:100" });
-  });
-
-  it("whereLt formats as lt:value", () => {
-    const q = new QueryBuilder("posts").whereLt("views", 100).build();
-    expect(q.filters).toEqual({ views: "lt:100" });
-  });
-
-  it("whereLte formats as lte:value", () => {
-    const q = new QueryBuilder("posts").whereLte("views", 100).build();
-    expect(q.filters).toEqual({ views: "lte:100" });
-  });
-
-  it("works with zero value", () => {
-    const q = new QueryBuilder("posts").whereGt("views", 0).build();
-    expect(q.filters).toEqual({ views: "gt:0" });
-  });
-
-  it("supports chaining multiple comparisons", () => {
-    const q = new QueryBuilder("posts")
-      .whereGte("price", 10)
-      .whereLte("price", 100)
-      .build();
-    expect(q.filters).toEqual({ price: "lte:100" }); // last write wins
-  });
-
-  it("each returns this for chaining", () => {
-    const qb = new QueryBuilder("x");
-    expect(qb.whereGt("a", 1)).toBe(qb);
-    expect(qb.whereGte("a", 1)).toBe(qb);
-    expect(qb.whereLt("a", 1)).toBe(qb);
-    expect(qb.whereLte("a", 1)).toBe(qb);
-  });
-});
-
-describe("QueryBuilder - whereSearch", () => {
-  it("formats as search:query", () => {
-    const q = new QueryBuilder("posts")
-      .whereSearch("body", "hello world")
-      .build();
-    expect(q.filters).toEqual({ body: "search:hello world" });
-  });
-
-  it("handles empty search query", () => {
-    const q = new QueryBuilder("posts").whereSearch("body", "").build();
-    expect(q.filters).toEqual({ body: "search:" });
-  });
-
-  it("returns this for chaining", () => {
-    const qb = new QueryBuilder("x");
-    expect(qb.whereSearch("body", "test")).toBe(qb);
   });
 });
 
@@ -265,63 +208,23 @@ describe("QueryBuilder - limit / offset / cursor", () => {
   });
 });
 
-// sorting
-
-describe("QueryBuilder - sort", () => {
-  it("sort() with a single field", () => {
-    const q = new QueryBuilder("posts").sort("created_at").build();
-    expect(q.sort).toBe("created_at");
-  });
-
-  it("sort() prefix with minus for descending", () => {
-    const q = new QueryBuilder("posts").sort("-created_at").build();
-    expect(q.sort).toBe("-created_at");
-  });
-
-  it("sort() with multiple fields joins with commas", () => {
-    const q = new QueryBuilder("posts").sort("-created_at", "title").build();
-    expect(q.sort).toBe("-created_at,title");
-  });
-
-  it("sort() with three fields", () => {
-    const q = new QueryBuilder("posts").sort("a", "b", "c").build();
-    expect(q.sort).toBe("a,b,c");
-  });
-
-  it("sort() replaces previous sort call", () => {
-    const q = new QueryBuilder("posts")
-      .sort("created_at")
-      .sort("title")
-      .build();
-    expect(q.sort).toBe("title");
-  });
-
-  it("returns this for chaining", () => {
-    const qb = new QueryBuilder("x");
-    expect(qb.sort("a")).toBe(qb);
-  });
-});
-
 // resetFilters
 
 describe("QueryBuilder - resetFilters", () => {
   it("clears all filters and pagination options", () => {
     const q = new QueryBuilder("posts")
       .whereStatus("published")
-      .where("title", "eq:hello")
+      .where("title", "hello")
       .whereEq("author", "alice")
-      .sort("-created_at")
       .limit(10)
       .offset(5)
       .resetFilters()
       .build();
 
-    expect(q.status).toBeUndefined();
     expect(q.limit).toBeUndefined();
     expect(q.offset).toBeUndefined();
     expect(q.cursor).toBeUndefined();
     expect(q.filters).toBeUndefined();
-    expect(q.sort).toBeUndefined();
   });
 
   it("preserves the schema after reset", () => {
@@ -336,7 +239,7 @@ describe("QueryBuilder - resetFilters", () => {
       .resetFilters()
       .whereStatus("published")
       .build();
-    expect(q.status).toBe("published");
+    expect(q.filters).toEqual({ _status: "published" });
   });
 
   it("returns this for chaining", () => {
@@ -349,12 +252,12 @@ describe("QueryBuilder - resetFilters", () => {
 
 describe("QueryBuilder - build() output", () => {
   it("returns a plain ContentQuery object (not a reference to internal state)", () => {
-    const qb = new QueryBuilder("posts").where("a", "eq:1");
+    const qb = new QueryBuilder("posts").where("a", "1");
     const q1 = qb.build();
     const q2 = qb.build();
     // Mutating q1 should not affect q2
     (q1 as any).filters = {};
-    expect(q2.filters).toEqual({ a: "eq:1" });
+    expect(q2.filters).toEqual({ a: "1" });
   });
 
   it("filters is undefined when no filters have been set", () => {
@@ -364,27 +267,24 @@ describe("QueryBuilder - build() output", () => {
 
   it("filters contains all added filters", () => {
     const q = new QueryBuilder("posts")
-      .whereEq("status", "published")
-      .whereGt("views", 100)
+      .whereEq("category", "tech")
+      .whereEq("views", 100)
       .build();
-    expect(q.filters).toEqual({ status: "eq:published", views: "gt:100" });
+    expect(q.filters).toEqual({ category: "tech", views: "100" });
   });
 
-  it("includes status, limit, offset, cursor, and sort when set", () => {
+  it("includes the status filter, limit, offset and cursor when set", () => {
     const q = new QueryBuilder("articles")
       .whereStatus("published")
-      .sort("-updated_at")
       .limit(50)
       .offset(0)
       .build();
 
     expect(q).toEqual({
-      status: "published",
-      sort: "-updated_at",
       limit: 50,
       offset: 0,
       cursor: undefined,
-      filters: undefined,
+      filters: { _status: "published" },
     } satisfies ContentQuery);
   });
 });
@@ -395,27 +295,19 @@ describe("QueryBuilder - fluent chaining (end-to-end)", () => {
   it("builds a complex query through chaining", () => {
     const q = query("posts")
       .whereStatus("published")
-      .where("category", "eq:tech")
+      .where("category", "tech")
       .whereEq("author", "alice")
-      .whereIn("tags", ["javascript", "typescript"])
-      .whereGte("rating", 4)
-      .whereLt("price", 50)
-      .whereSearch("body", "react")
-      .sort("-created_at", "title")
+      .whereEq("rating", 4)
       .limit(25)
       .build();
 
     expect(q).toMatchObject({
-      status: "published",
       filters: {
-        category: "eq:tech",
-        author: "eq:alice",
-        tags: 'in:["javascript","typescript"]',
-        rating: "gte:4",
-        price: "lt:50",
-        body: "search:react",
+        _status: "published",
+        category: "tech",
+        author: "alice",
+        rating: "4",
       },
-      sort: "-created_at,title",
       limit: 25,
     });
   });
