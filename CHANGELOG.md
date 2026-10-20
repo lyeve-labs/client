@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-10-20
+
+### Fixed
+
+- The query builder sends filters the content list endpoint reads. `whereEq` sent every value with an `eq:` prefix, so an equality filter never matched, and it now sends the bare value. `whereStatus` writes the `_status` filter the endpoint reads, where it used to send a `status` field the endpoint ignores.
+
+### Removed
+
+- `sort`, `whereGt`, `whereGte`, `whereLt`, `whereLte`, `whereIn` and `whereSearch` on the query builder, and the `status` and `sort` fields of `ContentQuery`. The content list endpoint compares each filter for exact equality and takes no sort, so these were ignored or refused. Code that called them no longer compiles. Filter with `whereEq` and `whereStatus`, and sort the returned items in the app.
+
 ## [0.5.0] - 2026-10-01
 
 ### Added

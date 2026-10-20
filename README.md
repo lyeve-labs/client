@@ -28,7 +28,7 @@ Zero dependencies. Native `fetch`. One client, every transport.
 - **ApiError:** thrown on every non-OK response. `status` and `message` always available.
 - **Automatic JSON:** `Content-Type: application/json` added by default. 15s timeout via `AbortSignal`.
 - **PaginationIterator:** async iterator over cursor-paginated endpoints. It fetches page after page and yields one record at a time.
-- **QueryBuilder:** fluent `query(schema).where().sort().limit()` builder for content queries.
+- **QueryBuilder:** fluent `query(schema).whereEq().limit()` builder for content queries. Filters match exactly, and the engine returns the newest entries first.
 - **createRetryFetch:** automatic retry with configurable exponential backoff.
 - **RequestDeduplicator:** coalesce in-flight duplicate requests into a single network call.
 - **Shared types:** `Schema`, `Content`, `User`, `APIKey`, `Webhook`, and 20+ more.
@@ -85,11 +85,7 @@ for await (const article of articles) {
 }
 
 // Query builder
-const published = query("articles")
-  .whereStatus("published")
-  .sort("-created_at")
-  .limit(20)
-  .build();
+const published = query("articles").whereStatus("published").limit(20).build();
 
 // Retry
 const resilient = createRetryFetch(fetch, {
