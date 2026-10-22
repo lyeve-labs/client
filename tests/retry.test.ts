@@ -13,7 +13,7 @@ function jsonResponse(body: unknown, status = 200): Response {
 
 /** Create a fetch mock that returns the given status for the first N calls
  *  then switches to a success response. */
-function sequentialFetch(...statuses: number[]): ReturnType<typeof vi.fn> {
+function sequentialFetch(...statuses: number[]) {
   let idx = 0;
   return vi.fn(
     async (
