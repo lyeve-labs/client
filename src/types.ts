@@ -70,12 +70,27 @@ export interface SchemaField {
    * unique field rather than ignoring it.
    */
   localized?: boolean;
+  /** Total significant digits of a decimal field. */
+  precision?: number;
+  /** Digits after the point of a decimal field. 0 is a valid scale. */
+  scale?: number;
 }
 
+/**
+ * The type of a schema field.
+ *
+ * An integer value arrives as a JSON number holding a 64-bit integer.
+ * `JSON.parse` reads it as a double, so a value past 2^53 loses precision.
+ *
+ * A decimal value arrives as a string with exactly `scale` digits after the
+ * point, such as "19.90", so no digit is lost on the way.
+ */
 export type FieldType =
   | "text"
   | "rich_text"
   | "number"
+  | "integer"
+  | "decimal"
   | "boolean"
   | "date"
   | "datetime"

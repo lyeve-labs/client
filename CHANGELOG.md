@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `FieldType` accepts `integer` and `decimal`, and `SchemaField` carries the optional `precision` and `scale` a decimal field uses. An integer value is a JSON number, so one past 2^53 loses precision when parsed. A decimal value is a string with exactly `scale` digits after the point, such as "19.90".
+
 ## [0.6.1] - 2026-10-22
 
 ### Changed
