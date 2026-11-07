@@ -103,7 +103,6 @@ export type FieldType =
 
 export interface Content {
   id: string;
-  schema_name: string;
   slug?: string;
   status?: string;
   data: Record<string, unknown>;
