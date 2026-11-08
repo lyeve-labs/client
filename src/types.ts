@@ -109,6 +109,11 @@ export interface Content {
   tenant_id?: string;
   created_at: string;
   updated_at: string;
+  /**
+   * The locale `data` was served in, when the read named one (the `locale`
+   * parameter or Accept-Language) and the localization plugin answered.
+   */
+  resolved_locale?: string;
 }
 
 export interface APIKey {
