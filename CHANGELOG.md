@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `Content` carries the optional `resolved_locale`, the locale an entry was served in when the read named one, by the `locale` parameter or Accept-Language, and the localization plugin answered.
+
 ### Removed
 
 - `Content` no longer has `schema_name`. The engine stops sending it on a content entry, because every content route names the content type in its path.
