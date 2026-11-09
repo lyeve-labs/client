@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `Content` carries the optional `resolved_locale`, the locale an entry was served in when the read named one, by the `locale` parameter or Accept-Language, and the localization plugin answered.
+- `SchemaField` carries the optional `help_text`, which tells a person what to put in the field and guides an assistant that fills it, and the optional `no_ai`, which keeps the field away from every AI provider.
 
 ### Removed
 

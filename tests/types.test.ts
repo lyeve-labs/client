@@ -1,5 +1,5 @@
 import { describe, expectTypeOf, it } from "vitest";
-import type { Content, Entitlements } from "../src/index.js";
+import type { Content, Entitlements, SchemaField } from "../src/index.js";
 
 describe("Entitlements", () => {
   it("declares the license fields the entitlements route returns", () => {
@@ -51,6 +51,15 @@ describe("Content", () => {
   it("declares the locale a localized read was served in", () => {
     expectTypeOf<Pick<Content, "resolved_locale">>().toEqualTypeOf<{
       resolved_locale?: string;
+    }>();
+  });
+});
+
+describe("SchemaField", () => {
+  it("declares the help text and the No AI mark", () => {
+    expectTypeOf<Pick<SchemaField, "help_text" | "no_ai">>().toEqualTypeOf<{
+      help_text?: string;
+      no_ai?: boolean;
     }>();
   });
 });
