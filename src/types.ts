@@ -74,6 +74,17 @@ export interface SchemaField {
   precision?: number;
   /** Digits after the point of a decimal field. 0 is a valid scale. */
   scale?: number;
+  /**
+   * Tells a person what to put in the field. A form that edits an entry shows
+   * it under the field, and an assistant that fills the field follows it. The
+   * server refuses more than 500 characters, and refuses it on a system field.
+   */
+  help_text?: string;
+  /**
+   * Keeps the field away from every AI provider: an assistant never reads its
+   * value and never fills it. The server refuses it on a system field.
+   */
+  no_ai?: boolean;
 }
 
 /**
@@ -103,13 +114,17 @@ export type FieldType =
 
 export interface Content {
   id: string;
-  schema_name: string;
   slug?: string;
   status?: string;
   data: Record<string, unknown>;
   tenant_id?: string;
   created_at: string;
   updated_at: string;
+  /**
+   * The locale `data` was served in, when the read named one (the `locale`
+   * parameter or Accept-Language) and the localization plugin answered.
+   */
+  resolved_locale?: string;
 }
 
 export interface APIKey {

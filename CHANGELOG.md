@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-11-09
+
+### Added
+
+- `Content` carries the optional `resolved_locale`, the locale an entry was served in when the read named one, by the `locale` parameter or Accept-Language, and the localization plugin answered.
+- `SchemaField` carries the optional `help_text`, which tells a person what to put in the field and guides an assistant that fills it, and the optional `no_ai`, which keeps the field away from every AI provider.
+
+### Removed
+
+- `Content` no longer has `schema_name`. The engine stops sending it on a content entry, because every content route names the content type in its path.
+
 ## [0.7.0] - 2026-11-06
 
 ### Added
